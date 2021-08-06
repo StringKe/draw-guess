@@ -12,8 +12,6 @@ const roughGeneratorInstance = generator as RoughGenerator;
 export const roughGenerator = roughGeneratorInstance;
 
 export function drawRough(renderObject: PIXI.Graphics, draw: RoughDrawable) {
-    console.log(draw);
-
     draw.sets.forEach(step => {
         switch (step.type) {
             case 'path':

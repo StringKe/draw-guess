@@ -80,16 +80,30 @@ export function AddClick(obj: PIXI.Container, clickFn: (event: PIXI.InteractionE
     const halfW = Round((oldW * 0.25 / 2));
     const halfH = Round((oldH * 0.25 / 2));
 
-    obj.addListener('pointerdown', e => {
-        clickFn(e);
-    }).addListener('pointerover', () => {
+    function pressDown() {
         obj.scale.set(1.25, 1.25);
         obj.position.x -= halfW
         obj.position.y -= halfH
-    }).addListener('pointerout', () => {
+    }
+
+    function pressUp() {
         obj.scale.set(1, 1);
         obj.position.x += halfW
         obj.position.y += halfH
+    }
+
+    obj.addListener('pointerdown', () => {
+        pressDown()
+    }).addListener('pointerup', e => {
+        pressUp();
+        clickFn(e);
+    }).addListener('pointerupoutside', e => {
+        pressUp();
+        clickFn(e);
+    }).addListener('pointerover', () => {
+        pressDown()
+    }).addListener('pointerout', () => {
+        pressUp();
     });
     return obj;
 }

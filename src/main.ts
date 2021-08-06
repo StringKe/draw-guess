@@ -1,8 +1,11 @@
-import * as PIXI from 'pixi.js'
-import {AddClick, CreateButton, SetPosition} from "./utils/ui";
+import * as PIXI from "pixi.js";
+import {Game} from "./game";
+import SceneManager from "./scene.manager";
+import {StartScene} from "./scene/start.scene";
 
-export class Main {
-    private app!: PIXI.Application;
+export default class Main {
+    private game!: Game;
+    private sceneManager: SceneManager;
 
     constructor(private container: HTMLElement) {
         PIXI.settings.RESOLUTION = Math.floor(window.devicePixelRatio);
@@ -11,35 +14,21 @@ export class Main {
     }
 
     init() {
-        this.app = new PIXI.Application({
-            width: 1280,
-            height: 720,
-            // backgroundColor: 0xffffff,
+        this.game = new Game(this.container, {
+            width: 1920,
+            height: 1080,
             backgroundColor: 0xfefae0,
-            resizeTo: window,
             antialias: true,
+            resizeTo: window,
         });
-        this.container.appendChild(this.app.view);
-        this.loadUis();
+        this.container.appendChild(this.game.view);
+        this.game.onResize();
+        this.sceneManager = new SceneManager(this.game);
+        this.loadScenes();
     }
 
-    loadUis() {
-        const startGameButton = AddClick(SetPosition(CreateButton("开始游戏"), 0.5, 0.5, this.app.screen), e => {
-            console.log('click');
-        });
-        const gameLobby = AddClick(SetPosition(CreateButton("游戏大厅"), 0.5, 0.5, this.app.screen), e => {
-            console.log('click');
-        });
-        const joinRoomButton = AddClick(SetPosition(CreateButton("加入房间"), 0.5, 0.5, this.app.screen), e => {
-            console.log('click');
-        });
-        joinRoomButton.y += gameLobby.height + 10;
-        startGameButton.y -= gameLobby.height + 10;
-
-        this.app.stage.addChild(joinRoomButton);
-        this.app.stage.addChild(startGameButton);
-        this.app.stage.addChild(gameLobby);
+    loadScenes() {
+        this.sceneManager.add(new StartScene(this.game, 'start'));
+        this.sceneManager.active('start')
     }
 }
-
-
