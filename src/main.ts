@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import {ButtonUi} from "./ui/button.ui";
+import {AddClick, CreateButton, SetPosition} from "./utils/ui";
 
 export class Main {
     private app!: PIXI.Application;
@@ -12,8 +12,8 @@ export class Main {
 
     init() {
         this.app = new PIXI.Application({
-            width: 1920,
-            height: 1080,
+            width: 1280,
+            height: 720,
             // backgroundColor: 0xffffff,
             backgroundColor: 0xfefae0,
             resizeTo: window,
@@ -24,8 +24,21 @@ export class Main {
     }
 
     loadUis() {
-        const button = new ButtonUi(this.app);
-        button.render()
+        const startGameButton = AddClick(SetPosition(CreateButton("开始游戏"), 0.5, 0.5, this.app.screen), e => {
+            console.log('click');
+        });
+        const gameLobby = AddClick(SetPosition(CreateButton("游戏大厅"), 0.5, 0.5, this.app.screen), e => {
+            console.log('click');
+        });
+        const joinRoomButton = AddClick(SetPosition(CreateButton("加入房间"), 0.5, 0.5, this.app.screen), e => {
+            console.log('click');
+        });
+        joinRoomButton.y += gameLobby.height + 10;
+        startGameButton.y -= gameLobby.height + 10;
+
+        this.app.stage.addChild(joinRoomButton);
+        this.app.stage.addChild(startGameButton);
+        this.app.stage.addChild(gameLobby);
     }
 }
 
