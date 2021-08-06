@@ -11,11 +11,25 @@ export function ActiveObject(object: PIXI.Container) {
     return object;
 }
 
+/**
+ * 绘制最大区域定义
+ */
 export interface PositionWindow {
     width: number;
     height: number;
 }
 
+/**
+ * 按照百分百设置对象的位置
+ *
+ * 基于对象中心点，而不是对象的左上角
+ *
+ * @param obj
+ * @param left x轴百分比
+ * @param top x轴百分比
+ * @param window 最大区域设置
+ * @constructor
+ */
 export function SetPosition(obj: PIXI.Container, left: number, top: number, window: PositionWindow = {
     width: 1920,
     height: 1080
@@ -43,6 +57,13 @@ export function SetPosition(obj: PIXI.Container, left: number, top: number, wind
     return obj;
 }
 
+/**
+ * 创建一个按钮，默认缩放效果为放大
+ * @param text
+ * @param width
+ * @param padding
+ * @constructor
+ */
 export function CreateButton(text: string, width?: number, padding: number = 10) {
     const textObj = new PIXI.Text(text, {
         fontSize: 16,
@@ -70,6 +91,13 @@ export function CreateButton(text: string, width?: number, padding: number = 10)
     return borderGraphics;
 }
 
+/**
+ * 添加点击事件
+ *
+ * @param obj
+ * @param clickFn
+ * @constructor
+ */
 export function AddClick(obj: PIXI.Container, clickFn: (event: PIXI.InteractionEvent) => void) {
     obj.interactive = true;
     obj.buttonMode = true;

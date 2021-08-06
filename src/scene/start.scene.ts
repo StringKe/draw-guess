@@ -2,6 +2,9 @@ import Scene from "../scene";
 import {AddClick, CreateButton, SetPosition} from "../utils/ui";
 import {SettingIcon} from "../utils/icons";
 
+/**
+ * 欢迎场景
+ */
 export class StartScene extends Scene {
     name = 'start';
 

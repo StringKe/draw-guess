@@ -6,15 +6,18 @@ import RoughType from 'roughjs';
 declare type RoughGenerator = ReturnType<typeof RoughType.generator>;
 declare type RoughDrawable = ReturnType<RoughGenerator["rectangle"]>;
 
+// 手绘风格渲染组件实例
 const generator = rough.generator(undefined);
 const roughGeneratorInstance = generator as RoughGenerator;
 
 export const roughGenerator = roughGeneratorInstance;
 
+// 将 SVG PATH 转换成可绘制对象
 export function getPathRoughDrawable(path: string): RoughDrawable {
     return roughGenerator.path(path)
 }
 
+// 手绘风格渲染
 export function drawRough(renderObject: PIXI.Graphics, draw: RoughDrawable) {
     draw.sets.forEach(step => {
         switch (step.type) {

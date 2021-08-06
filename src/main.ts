@@ -3,6 +3,9 @@ import {Game} from "./game";
 import SceneManager from "./scene.manager";
 import {StartScene} from "./scene/start.scene";
 
+/**
+ * 主入口
+ */
 export default class Main {
     private game!: Game;
     private sceneManager: SceneManager;
@@ -13,6 +16,9 @@ export default class Main {
         PIXI.utils.skipHello();
     }
 
+    /**
+     * 初始化游戏
+     */
     init() {
         this.game = new Game(this.container, {
             width: 1920,

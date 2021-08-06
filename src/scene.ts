@@ -2,6 +2,9 @@ import * as PIXI from 'pixi.js'
 import {makeId} from './utils/math';
 import {Game} from "./game";
 
+/**
+ * 场景基类，所有场景均需继承此类实现load方法
+ */
 export default abstract class Scene {
     abstract name: string;
     public id: string;

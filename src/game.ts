@@ -1,6 +1,8 @@
 import * as PIXI from 'pixi.js'
 
-
+/**
+ * 游戏管理对象
+ */
 export class Game extends PIXI.Application {
     root: PIXI.Container;
     designWidth: number = 1920;
