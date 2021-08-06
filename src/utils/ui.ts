@@ -80,20 +80,28 @@ export function AddClick(obj: PIXI.Container, clickFn: (event: PIXI.InteractionE
     const halfW = Round((oldW * 0.25 / 2));
     const halfH = Round((oldH * 0.25 / 2));
 
+    let isPressDown = false;
+
     function pressDown() {
-        obj.scale.set(1.25, 1.25);
-        obj.position.x -= halfW
-        obj.position.y -= halfH
+        if (!isPressDown) {
+            obj.scale.set(1.25, 1.25);
+            obj.position.x -= halfW
+            obj.position.y -= halfH
+            isPressDown = true;
+        }
     }
 
     function pressUp() {
-        obj.scale.set(1, 1);
-        obj.position.x += halfW
-        obj.position.y += halfH
+        if (isPressDown) {
+            obj.scale.set(1, 1);
+            obj.position.x += halfW
+            obj.position.y += halfH
+            isPressDown = false;
+        }
     }
 
     obj.addListener('pointerdown', () => {
-        pressDown()
+        pressDown();
     }).addListener('pointerup', e => {
         pressUp();
         clickFn(e);
@@ -101,7 +109,7 @@ export function AddClick(obj: PIXI.Container, clickFn: (event: PIXI.InteractionE
         pressUp();
         clickFn(e);
     }).addListener('pointerover', () => {
-        pressDown()
+        pressDown();
     }).addListener('pointerout', () => {
         pressUp();
     });
