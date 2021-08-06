@@ -22,7 +22,8 @@ export class StartScene extends Scene {
         startGameButton.y -= gameLobby.height + 10;
 
         const setting = AddClick(SetPosition(SettingIcon(), 0.02, 0.03, this.game.screen), e => {
-            console.log('click');
+            console.log('click setting');
+            this.game.sceneManager.active('setting');
         });
         this.container.addChild(setting);
 

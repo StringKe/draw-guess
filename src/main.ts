@@ -1,14 +1,13 @@
 import * as PIXI from "pixi.js";
 import {Game} from "./game";
-import SceneManager from "./scene.manager";
 import {StartScene} from "./scene/start.scene";
+import {SettingScene} from "./scene/setting.scene";
 
 /**
  * 主入口
  */
 export default class Main {
     private game!: Game;
-    private sceneManager: SceneManager;
 
     constructor(private container: HTMLElement) {
         PIXI.settings.RESOLUTION = Math.floor(window.devicePixelRatio);
@@ -29,12 +28,12 @@ export default class Main {
         });
         this.container.appendChild(this.game.view);
         this.game.onResize();
-        this.sceneManager = new SceneManager(this.game);
         this.loadScenes();
     }
 
     loadScenes() {
-        this.sceneManager.add(new StartScene(this.game, 'start'));
-        this.sceneManager.active('start')
+        this.game.sceneManager.add(new StartScene(this.game, 'start'));
+        this.game.sceneManager.add(new SettingScene(this.game, 'setting'));
+        this.game.sceneManager.active('start')
     }
 }
