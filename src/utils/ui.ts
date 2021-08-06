@@ -59,7 +59,7 @@ export function CreateButton(text: string, width?: number, padding: number = 10)
         borderWidth = width;
     }
 
-    let borderGraphics = (new PIXI.Graphics()).lineStyle(1, 0x000444, 1);
+    let borderGraphics = (new PIXI.Graphics()).lineStyle(1, 0x000000, 1);
     borderGraphics = drawRough(borderGraphics, roughGenerator.rectangle(0, 0, borderWidth, borderHeight));
 
     textObj.position.x = Round((borderWidth - textWidth - 1) / 2);

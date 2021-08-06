@@ -1,5 +1,6 @@
 import Scene from "../scene";
 import {AddClick, CreateButton, SetPosition} from "../utils/ui";
+import {SettingIcon} from "../utils/icons";
 
 export class StartScene extends Scene {
     name = 'start';
@@ -16,6 +17,11 @@ export class StartScene extends Scene {
         });
         joinRoomButton.y += gameLobby.height + 10;
         startGameButton.y -= gameLobby.height + 10;
+
+        const setting = AddClick(SetPosition(SettingIcon(), 0.02, 0.03, this.game.screen), e => {
+            console.log('click');
+        });
+        this.container.addChild(setting);
 
         this.container.addChild(startGameButton);
         this.container.addChild(joinRoomButton);
