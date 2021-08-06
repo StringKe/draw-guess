@@ -9,12 +9,49 @@ export class StartScene extends Scene {
   name = 'start';
 
   load() {
-    const startGameButton = AddClick(
-      SetPosition(CreateButton('开始游戏'), 0.5, 0.5, this.game.screen),
-      (e) => {
-        console.log('click');
-      }
+    const startGameButton = SetPosition(
+      CreateButton('开始游戏'),
+      0.5,
+      0.5,
+      this.game.screen
     );
+    AddClick(startGameButton, (e) => {
+      console.log('点击开始游戏');
+      this.game.backend.getRoom().then((info) => {
+        let infoTitle;
+        const showInfos = (info: MGOBE.types.RoomInfo) => {
+          if (infoTitle) {
+            this.container.removeChild(infoTitle);
+          }
+          infoTitle = SetPosition(
+            CreateButton(
+              `匹配到房间 ${info.name} 当前存在玩家 ${info.playerList.length}`
+            ),
+            0.5,
+            0.1,
+            this.game.screen
+          );
+          this.container.addChild(infoTitle);
+        };
+        showInfos(info);
+        const loopInfo = setInterval(() => {
+          this.game.backend.room.getRoomDetail((event) => {
+            if (event.code === 0) {
+              showInfos(event.data.roomInfo);
+            }
+          });
+        }, 1000);
+
+        this.game.backend.room.onJoinRoom = (event) => {
+          const info = event.data.roomInfo;
+          if (info.playerList.length === info.maxPlayers) {
+            window.clearInterval(loopInfo);
+            alert('可以开始游戏了');
+          }
+          showInfos(event.data.roomInfo);
+        };
+      });
+    });
     const gameLobby = AddClick(
       SetPosition(CreateButton('游戏大厅'), 0.5, 0.5, this.game.screen),
       (e) => {

@@ -71,19 +71,31 @@ export class Backend {
     });
   }
 
-  createRoom() {
-    const matchRoomPara = {
-      playerInfo: this.playerInfo,
-      maxPlayers: 8,
-      roomType: '1',
-    };
-    this.room.matchRoom(matchRoomPara, (event) => {
-      console.log(event);
-      if (event.code !== 0) {
-        console.log('匹配失败', event.code);
-      }
+  getRoom() {
+    return new Promise<MGOBE.types.RoomInfo>((resolve) => {
+      const matchRoomPara = {
+        playerInfo: this.playerInfo,
+        maxPlayers: 8,
+        roomType: '1',
+      };
+      this.room.matchRoom(matchRoomPara, (matchRoomEvent) => {
+        if (matchRoomEvent.code === 0) {
+          resolve(matchRoomEvent.data.roomInfo);
+        } else if (matchRoomEvent.code === 20010) {
+          this.room.getRoomDetail((detailEvent) => {
+            if (detailEvent.code === 0) {
+              resolve(detailEvent.data.roomInfo);
+            } else {
+              console.log('匹配失败', detailEvent.code);
+            }
+          });
+        } else {
+          if (matchRoomEvent.code !== 0) {
+            console.log('匹配失败', matchRoomEvent.code);
+          }
+        }
+      });
     });
-    console.log(this.room);
   }
 
   init() {

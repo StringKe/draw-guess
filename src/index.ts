@@ -7,8 +7,6 @@ Backend.getUser().then((id) => {
     if (backendInit) {
       const app = new Main(document.body, backend);
       app.init();
-
-      backend.createRoom();
     } else {
       alert('链接服务器失败，请稍后重试');
     }
