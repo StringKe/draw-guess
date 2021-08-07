@@ -3,6 +3,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -22,6 +23,7 @@ const config = {
     },
     devtool: "source-map",
     plugins: [
+        new ESLintPlugin(),
         new HtmlWebpackPlugin({
             template: "index.html",
         }),
