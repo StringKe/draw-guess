@@ -10,7 +10,7 @@ import { AddClick, CreateTextBox, SetPosition } from '../utils/ui';
 export class StartScene extends Scene {
     name = 'start';
 
-    startMathGame() {
+    startMathGame(): void {
         this.game.backend.getRoom().then((info) => {
             let infoTitle: PIXI.Container;
             const showInfos = (info: MGOBE.types.RoomInfo): void => {

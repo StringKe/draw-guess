@@ -33,7 +33,7 @@ export class BasicGameScene extends Scene {
         this.initCanvas();
     }
 
-    initCanvas() {
+    initCanvas(): void {
         const maxWindow = {
             width: this.game.designWidth,
             height: this.game.designHeight,
@@ -95,28 +95,23 @@ export class BasicGameScene extends Scene {
         this.addListener();
     }
 
-    load() {
+    load(): void {
         this.container.addChild(this.canvas);
     }
 
-    onDragStart(event: PIXI.InteractionEvent) {
+    onDragStart(event: PIXI.InteractionEvent): void {
         this.dragData = event.data;
         this.dragging = true;
     }
 
-    onDrag(event: PIXI.InteractionEvent) {
+    onDrag(event: PIXI.InteractionEvent): void {
         if (this.dragging) {
-            const mouse = (
-                this.dragData as PIXI.InteractionData
-            ).getLocalPosition(this.canvas);
-            const [x, y] = [mouse.x, mouse.y].map((i) => i / this.ratio);
-
             this.addMousePoint();
             this.isMove = true;
         }
     }
 
-    addMousePoint() {
+    addMousePoint(): void {
         const mouse = (this.dragData as PIXI.InteractionData).getLocalPosition(
             this.canvas,
         );
@@ -132,7 +127,7 @@ export class BasicGameScene extends Scene {
         this.renderStrokePath();
     }
 
-    onDragEnd(event: PIXI.InteractionEvent) {
+    onDragEnd(event: PIXI.InteractionEvent): void {
         if (!this.isMove) {
             this.addMousePoint();
         }
@@ -141,7 +136,7 @@ export class BasicGameScene extends Scene {
         this.isMove = false;
     }
 
-    private addListener() {
+    private addListener(): void {
         this.canvas
             .addListener('pointerdown', (e) => {
                 console.log('pointerdown');
@@ -160,7 +155,7 @@ export class BasicGameScene extends Scene {
             });
     }
 
-    private renderStrokePath() {
+    private renderStrokePath(): void {
         // 清理之前渲染的所有结果
         this.strokePathCanvas.children.forEach((path) => {
             this.strokePathCanvas.removeChild(path);
