@@ -56,14 +56,6 @@ export class BasicGameScene extends Scene {
 
         this.canvas = new PIXI.Graphics();
 
-        this.overflowHidden = new PIXI.Graphics();
-        this.overflowHidden.drawRect(
-            0,
-            0,
-            maxWindow.width * this.ratio,
-            maxWindow.height * this.ratio,
-        );
-
         this.canvas.interactive = true;
         this.canvas.hitArea = new PIXI.Rectangle(
             0,
@@ -86,12 +78,24 @@ export class BasicGameScene extends Scene {
             (this.game.screen.width - this.canvas.width) / 2,
             (this.game.screen.height - this.canvas.height) / 2,
         );
+
+        this.overflowHidden = new PIXI.Graphics();
+
+        this.overflowHidden.beginFill(0xffffff, 1);
+        this.overflowHidden.drawRect(
+            this.canvas.position.x + 1,
+            this.canvas.position.y + 1,
+            this.canvas.width - 1,
+            this.canvas.height - 1,
+        );
+        this.overflowHidden.endFill();
+
+        this.strokePathCanvas.mask = this.overflowHidden;
+
         this.strokePathCanvas.interactive = false;
         this.strokePathCanvas.buttonMode = false;
-        this.canvas.mask = this.overflowHidden;
 
         this.canvas.addChild(this.strokePathCanvas);
-        console.log(this);
         this.addListener();
     }
 

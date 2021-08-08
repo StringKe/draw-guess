@@ -16,7 +16,6 @@ export class SettingScene extends Scene {
                 this.game.sceneManager.active('start');
             },
         );
-        console.log(close.x, this.game.screen.width);
         this.container.addChild(close);
     }
 }
