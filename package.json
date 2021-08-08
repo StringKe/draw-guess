@@ -15,6 +15,7 @@
     "@pixi/ticker": "^6.1.0",
     "@pixi/utils": "^6.1.0",
     "curve-interpolator": "^2.0.8",
+    "lodash": "^4.17.21",
     "nanoid": "^3.1.23",
     "pixi.js": "^6.1.0",
     "roughjs": "^4.4.1"
@@ -23,6 +24,7 @@
     "@commitlint/cli": "^13.1.0",
     "@commitlint/config-conventional": "^13.1.0",
     "@trivago/prettier-plugin-sort-imports": "^2.0.2",
+    "@types/lodash": "^4.14.172",
     "@typescript-eslint/eslint-plugin": "4",
     "@typescript-eslint/parser": "^4.29.0",
     "@webpack-cli/generators": "^2.2.0",

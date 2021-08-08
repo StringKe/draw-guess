@@ -1,4 +1,4 @@
-import { CurveInterpolator } from 'curve-interpolator';
+import { CurveInterpolator2D } from 'curve-interpolator';
 
 import * as PIXI from 'pixi.js';
 
@@ -7,11 +7,14 @@ import Scene from '../../scene';
 import { drawRough, roughGenerator } from '../../utils/styles';
 
 interface StrokePath {
-    color: number;
     x: number;
     y: number;
+}
+
+interface StrokeSave {
+    color: number;
     width: number;
-    isRender: boolean;
+    points: StrokePath[];
 }
 
 /**
@@ -19,7 +22,8 @@ interface StrokePath {
  */
 export class BasicGameScene extends Scene {
     name = 'basic.game';
-    strokePath: StrokePath[] = [];
+    strokePath: StrokeSave[] = [];
+    strokePathIndex: number = 0;
     private strokePathCanvas: PIXI.Graphics = new PIXI.Graphics();
     private dragData: PIXI.InteractionData | undefined;
     private dragging: boolean = false;
@@ -121,12 +125,16 @@ export class BasicGameScene extends Scene {
         );
         const [x, y] = [mouse.x, mouse.y].map((i) => i / this.ratio);
 
-        this.strokePath.push({
-            width: 1,
+        if (!this.strokePath[this.strokePathIndex]) {
+            this.strokePath[this.strokePathIndex] = {
+                color: 0x000000,
+                points: [],
+                width: 2,
+            };
+        }
+        this.strokePath[this.strokePathIndex].points.push({
             x,
             y,
-            color: 0x000000,
-            isRender: false,
         });
         this.renderStrokePath();
     }
@@ -138,6 +146,7 @@ export class BasicGameScene extends Scene {
         this.dragging = false;
         this.dragData = undefined;
         this.isMove = false;
+        this.strokePathIndex++;
     }
 
     private addListener(): void {
@@ -164,23 +173,30 @@ export class BasicGameScene extends Scene {
         this.strokePathCanvas.children.forEach((path) => {
             this.strokePathCanvas.removeChild(path);
         });
-        const rawPoints = this.strokePath.map((i) => [i.x, i.y]);
-        const interp = new CurveInterpolator(rawPoints, { tension: 0.2 });
-        const points = interp.getPoints();
-        this.strokePathCanvas.moveTo(points[0][0], points[0][1]);
-        this.strokePathCanvas.lineStyle(1, 0x000000);
-        points.forEach(([x, y]: number[]) => {
-            this.strokePathCanvas.lineTo(x * this.ratio, y * this.ratio);
+
+        this.strokePath.forEach((line, index) => {
+            const points = line.points.map((i) => {
+                return [i.x * this.ratio, i.y * this.ratio];
+            });
+            const curveInterpolator = new CurveInterpolator2D(
+                points,
+                0.2,
+                1,
+                false,
+            );
+            const renderPoints = curveInterpolator.getPoints() as number[][];
+
+            if (renderPoints.length) {
+                const fistPoint = renderPoints[0];
+                const lineGraphics = new PIXI.Graphics();
+                lineGraphics.lineStyle(1, line.color);
+                lineGraphics.moveTo(fistPoint[0], fistPoint[1]);
+                renderPoints.shift();
+                renderPoints.forEach(([x, y]) => {
+                    lineGraphics.lineTo(x, y);
+                });
+                this.strokePathCanvas.addChild(lineGraphics);
+            }
         });
-        // this.strokePathCanvas.closePath();
-        // this.strokePathCanvas.beginFill(0x000000);
-        // this.strokePath.map(({ color, x, y, isRender, width }, index) => {
-        //   if (!isRender && index < this.strokePath.length - 1) {
-        //     this.strokePathCanvas.lineStyle(width, color);
-        //     this.strokePathCanvas.drawCircle(x * this.ratio, y * this.ratio, 1);
-        //     this.strokePath[index].isRender = true;
-        //   }
-        // });
-        // this.strokePathCanvas.endFill();
     }
 }
