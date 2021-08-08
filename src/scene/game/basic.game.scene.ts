@@ -1,3 +1,5 @@
+import * as gsc from '@thi.ng/geom-subdiv-curve';
+
 import * as PIXI from 'pixi.js';
 
 import { Game } from '../../game';
@@ -172,47 +174,45 @@ export class BasicGameScene extends Scene {
             this.strokePathCanvas.removeChild(path);
         });
 
-        this.strokePath.forEach((line, index) => {
-            const lineGraphics = new PIXI.Graphics();
-            const points = [
-                ...line.points.map((i) => {
-                    return { ...i, x: i.x * this.ratio, y: i.y * this.ratio };
-                }),
-            ] as StrokePath[];
-            const fistPoint = points[0];
-            lineGraphics.lineStyle(line.width, line.color);
-            points.shift();
-            lineGraphics.moveTo(fistPoint.x, fistPoint.y);
-            points.forEach(({ x, y }) => {
-                lineGraphics.lineTo(x, y);
-            });
-            this.strokePathCanvas.addChild(lineGraphics);
-        });
+        // this.strokePath.forEach((line, index) => {
+        //     const lineGraphics = new PIXI.Graphics();
+        //     const points = [
+        //         ...line.points.map((i) => {
+        //             return { ...i, x: i.x * this.ratio, y: i.y * this.ratio };
+        //         }),
+        //     ] as StrokePath[];
+        //     const fistPoint = points[0];
+        //     lineGraphics.lineStyle(line.width, line.color);
+        //     points.shift();
+        //     lineGraphics.moveTo(fistPoint.x, fistPoint.y);
+        //     points.forEach(({ x, y }) => {
+        //         lineGraphics.lineTo(x, y);
+        //     });
+        //     this.strokePathCanvas.addChild(lineGraphics);
+        // });
 
         // 线过长线段非常明显
-        // this.strokePath.forEach((line, index) => {
-        //     const points = line.points.map((i) => {
-        //         return [i.x * this.ratio, i.y * this.ratio];
-        //     });
-        //     const curveInterpolator = new CurveInterpolator2D(
-        //         points,
-        //         0.05,
-        //         1,
-        //         false,
-        //     );
-        //     const renderPoints = curveInterpolator.getPoints() as number[][];
-        //
-        //     if (renderPoints.length) {
-        //         const fistPoint = renderPoints[0];
-        //         const lineGraphics = new PIXI.Graphics();
-        //         lineGraphics.lineStyle(line.width, line.color);
-        //         lineGraphics.moveTo(fistPoint[0], fistPoint[1]);
-        //         renderPoints.shift();
-        //         renderPoints.forEach(([x, y]) => {
-        //             lineGraphics.lineTo(x, y);
-        //         });
-        //         this.strokePathCanvas.addChild(lineGraphics);
-        //     }
-        // });
+        this.strokePath.forEach((line, index) => {
+            const points = line.points.map((i) => {
+                return [i.x * this.ratio, i.y * this.ratio];
+            });
+
+            const renderPoints = gsc.subdivide(points, {
+                fn: gsc.kernel3([1 / 8, 3 / 4, 1 / 8], [0, 1 / 2, 1 / 2]),
+                size: 3,
+            }) as number[][];
+
+            if (renderPoints.length) {
+                const fistPoint = renderPoints[0];
+                const lineGraphics = new PIXI.Graphics();
+                lineGraphics.lineStyle(line.width, line.color);
+                lineGraphics.moveTo(fistPoint[0], fistPoint[1]);
+                renderPoints.shift();
+                renderPoints.forEach(([x, y]) => {
+                    lineGraphics.lineTo(x, y);
+                });
+                this.strokePathCanvas.addChild(lineGraphics);
+            }
+        });
     }
 }
