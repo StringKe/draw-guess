@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 
 import { Backend } from './backend';
 import { Game } from './game';
+import { BasicGameScene } from './scene/game/basic.game.scene';
 import { SettingScene } from './scene/setting.scene';
 import { StartScene } from './scene/start.scene';
 
@@ -37,8 +38,9 @@ export default class Main {
     }
 
     loadScenes(): void {
-        this.game.sceneManager.add(new StartScene(this.game, 'start'));
-        this.game.sceneManager.add(new SettingScene(this.game, 'setting'));
+        this.game.sceneManager.add(new StartScene(this.game));
+        this.game.sceneManager.add(new SettingScene(this.game));
+        this.game.sceneManager.add(new BasicGameScene(this.game));
         this.game.sceneManager.active('start');
     }
 }

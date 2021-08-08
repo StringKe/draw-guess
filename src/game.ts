@@ -13,7 +13,7 @@ export class Game extends PIXI.Application {
     designHeight: number = 1080;
     sceneManager: SceneManager;
     private readonly container: HTMLElement;
-    private readonly options: PIXI.IApplicationOptions;
+    private readonly options!: PIXI.IApplicationOptions | undefined;
 
     constructor(
         element: HTMLElement,

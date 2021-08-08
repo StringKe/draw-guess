@@ -14,6 +14,7 @@
     "@pixi/settings": "^6.1.0",
     "@pixi/ticker": "^6.1.0",
     "@pixi/utils": "^6.1.0",
+    "curve-interpolator": "^2.0.8",
     "nanoid": "^3.1.23",
     "pixi.js": "^6.1.0",
     "roughjs": "^4.4.1"

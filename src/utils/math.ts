@@ -1,7 +1,7 @@
 import { nanoid, customAlphabet } from 'nanoid';
 
 // 项目内所有数字均保留 4 位小数
-export function Round(value, n = 4): number {
+export function Round(value: number, n = 4): number {
     return Math.round(value * Math.pow(10, n)) / Math.pow(10, n);
 }
 

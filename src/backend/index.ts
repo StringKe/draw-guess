@@ -40,7 +40,7 @@ export class Backend {
             userInfo.name = '游客' + makeUserName();
             localStorage.setItem('user_name', userInfo.name);
         }
-        return userInfo;
+        return userInfo as MGOBE.types.PlayerInfoPara;
     }
 
     static async getUser(): Promise<string> {
@@ -75,11 +75,11 @@ export class Backend {
                 roomType: '1',
             };
             this.room.matchRoom(matchRoomPara, (matchRoomEvent) => {
-                if (matchRoomEvent.code === 0) {
+                if (matchRoomEvent.code === 0 && matchRoomEvent.data) {
                     resolve(matchRoomEvent.data.roomInfo);
                 } else if (matchRoomEvent.code === 20010) {
                     this.room.getRoomDetail((detailEvent) => {
-                        if (detailEvent.code === 0) {
+                        if (detailEvent.code === 0 && detailEvent.data) {
                             resolve(detailEvent.data.roomInfo);
                         } else {
                             console.log('匹配失败', detailEvent.code);

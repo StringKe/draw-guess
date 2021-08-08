@@ -44,8 +44,8 @@ export function SetPosition(
         Round(i),
     );
 
-    obj.position.x = x + Round(obj.width / 2);
-    obj.position.y = y + Round(obj.height / 2);
+    obj.position.x = x - Round(obj.width / 2);
+    obj.position.y = y - Round(obj.height / 2);
 
     const padding = 40;
     const minX = padding;
@@ -86,7 +86,7 @@ export function SetPosition(
  * @param padding
  * @constructor
  */
-export function CreateButton(
+export function CreateTextBox(
     text: string,
     width?: number,
     padding: number = 10,

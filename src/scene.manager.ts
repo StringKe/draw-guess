@@ -17,7 +17,7 @@ export default class SceneManager {
     active(find: string | Scene): boolean {
         let id = find as string;
         if (typeof find !== 'string') {
-            id = find.id;
+            id = find.name;
         }
         const instance = this.scenes.get(id);
         if (instance) {
@@ -43,7 +43,7 @@ export default class SceneManager {
             scene.load();
             scene.isLoading = true;
         }
-        this.scenes.set(scene.id, scene);
+        this.scenes.set(scene.name, scene);
     }
 
     /**
@@ -53,7 +53,7 @@ export default class SceneManager {
     remove(find: string | Scene): boolean {
         let id = find as string;
         if (typeof find !== 'string') {
-            id = find.id;
+            id = find.name;
         }
         const instance = this.scenes.get(id);
         if (instance) {

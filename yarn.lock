@@ -1881,6 +1881,11 @@ cssesc@^3.0.0:
   resolved "https://registry.yarnpkg.com/cssesc/-/cssesc-3.0.0.tgz#37741919903b868565e1c09ea747445cd18983ee"
   integrity sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==
 
+curve-interpolator@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/curve-interpolator/-/curve-interpolator-2.0.8.tgz#700106e9e9c2331349011178c6814148307491b1"
+  integrity sha512-2yzZLrzyysQe7BheosIOZqIsGGeQNYuZg9EBjem9V8VmKgEsiFrS7bN2+xd7CAeRLF8z+NlV5mq+Lo3bO2+tqA==
+
 cz-conventional-changelog@3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/cz-conventional-changelog/-/cz-conventional-changelog-3.2.0.tgz#6aef1f892d64113343d7e455529089ac9f20e477"
