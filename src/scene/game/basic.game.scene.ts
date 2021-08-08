@@ -127,9 +127,9 @@ export class BasicGameScene extends Scene {
 
         if (!this.strokePath[this.strokePathIndex]) {
             this.strokePath[this.strokePathIndex] = {
-                color: 0x000000,
+                color: PIXI.utils.string2hex('#474747'),
                 points: [],
-                width: 2,
+                width: 3,
             };
         }
         this.strokePath[this.strokePathIndex].points.push({
@@ -180,7 +180,7 @@ export class BasicGameScene extends Scene {
             });
             const curveInterpolator = new CurveInterpolator2D(
                 points,
-                0.2,
+                0.05,
                 1,
                 false,
             );
@@ -189,7 +189,7 @@ export class BasicGameScene extends Scene {
             if (renderPoints.length) {
                 const fistPoint = renderPoints[0];
                 const lineGraphics = new PIXI.Graphics();
-                lineGraphics.lineStyle(1, line.color);
+                lineGraphics.lineStyle(line.width, line.color);
                 lineGraphics.moveTo(fistPoint[0], fistPoint[1]);
                 renderPoints.shift();
                 renderPoints.forEach(([x, y]) => {
