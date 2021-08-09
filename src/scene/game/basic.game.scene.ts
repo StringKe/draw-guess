@@ -71,7 +71,7 @@ export class BasicGameScene extends Scene {
         this.initCanvas();
         this.sender = bathMessage(420)((chunk) => {
             const frame = {
-                chunk: 1,
+                chunk: chunk,
             };
             this.game.backend.room.sendFrame({ data: frame }, (event) => {
                 if (event.code === ErrCode.EC_OK) {
@@ -96,18 +96,38 @@ export class BasicGameScene extends Scene {
     }
 
     sendPath(): void {
+        const frame = {
+            chunk: this.strokeSavePath.reduce<StrokeSave[]>(
+                (result, i, index) => {
+                    if (!i.isSend) {
+                        this.strokeSavePath[index].isSend = true;
+                        result.push(i);
+                    }
+                    return result;
+                },
+                [],
+            ),
+        };
+        this.game.backend.room.sendFrame({ data: frame }, (event) => {
+            if (event.code === ErrCode.EC_OK) {
+                console.log('发送成功', event);
+            } else {
+                console.log('发送失败', event);
+            }
+        });
+
         // const frame = { paths: [1, 2, 3] };
-        const data = JSON.stringify(
-            this.strokeSavePath.reduce<StrokeSave[]>((result, i, index) => {
-                if (!i.isSend) {
-                    this.strokeSavePath[index].isSend = true;
-                    result.push(i);
-                }
-                return result;
-            }, []),
-        );
-        console.log(data);
-        this.sender.process(data);
+        // const data = JSON.stringify(
+        //     this.strokeSavePath.reduce<StrokeSave[]>((result, i, index) => {
+        //         if (!i.isSend) {
+        //             this.strokeSavePath[index].isSend = true;
+        //             result.push(i);
+        //         }
+        //         return result;
+        //     }, []),
+        // );
+        // console.log(data);
+        // this.sender.process(data);
     }
 
     start(): void {
@@ -127,7 +147,12 @@ export class BasicGameScene extends Scene {
             },
         }) => {
             if (items.length) {
-                console.log('帧广播', id, items);
+                items.forEach((item) => {
+                    const data = item.data as { chunk: StrokeSave[] };
+                    this.strokeSavePath.push(...data.chunk);
+                    console.log('帧广播', id, data.chunk);
+                });
+                this.renderStrokeSavePath();
             }
         };
     }
@@ -289,6 +314,8 @@ export class BasicGameScene extends Scene {
 
         items.forEach((item, index) => {
             autoScale(item, itemSize);
+
+            // item.scale.set(this.ratio, this.ratio);
 
             const x =
                 this.canvas.position.x +

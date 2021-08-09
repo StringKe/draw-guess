@@ -71,7 +71,7 @@ export class Backend {
         return await new Promise<MGOBE.types.RoomInfo>((resolve) => {
             const matchRoomPara = {
                 playerInfo: this.playerInfo,
-                maxPlayers: 2,
+                maxPlayers: 4,
                 roomType: '1',
             };
             this.room.matchRoom(matchRoomPara, (matchRoomEvent) => {
