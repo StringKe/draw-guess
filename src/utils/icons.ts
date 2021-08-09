@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-import { drawRough, getPathRoughDrawable } from './styles';
+import { drawRoughV1, getPathRoughDrawable } from './styles';
 
 /**
  * !!! 注意所有图表必须从 https://iconpark.oceanengine.com/official 获取 SVG
@@ -9,7 +9,7 @@ import { drawRough, getPathRoughDrawable } from './styles';
 export function MakePathToIcon(paths: string[]): PIXI.Graphics {
     let graphics = new PIXI.Graphics().lineStyle(1, 0x000000, 1);
     paths.forEach((path) => {
-        graphics = drawRough(graphics, getPathRoughDrawable(path));
+        graphics = drawRoughV1(graphics, getPathRoughDrawable(path));
     });
 
     return graphics;

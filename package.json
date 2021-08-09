@@ -15,7 +15,7 @@
     "@pixi/ticker": "^6.1.0",
     "@pixi/utils": "^6.1.0",
     "@thi.ng/geom-subdiv-curve": "^1.0.1",
-    "curve-interpolator": "^2.0.8",
+    "d-path-parser": "^1.0.0",
     "lodash": "^4.17.21",
     "nanoid": "^3.1.23",
     "pixi.js": "^6.1.0",

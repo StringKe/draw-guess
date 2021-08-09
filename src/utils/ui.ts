@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 
 import { Round } from './math';
-import { drawRough, roughGenerator } from './styles';
+import { drawRoughV1, roughGenerator } from './styles';
 
 /**
  * 给绘制对象添加可操作区域
@@ -79,6 +79,16 @@ export function SetPosition(
     return obj;
 }
 
+export function createCircleBox(diameter: number): PIXI.Graphics {
+    let borderGraphics = new PIXI.Graphics().lineStyle(1, 0x000000, 1);
+    borderGraphics = drawRoughV1(
+        borderGraphics,
+        roughGenerator.circle(0, 0, diameter),
+    );
+
+    return borderGraphics;
+}
+
 /**
  * 创建一个按钮，默认缩放效果为放大
  * @param text
@@ -107,7 +117,7 @@ export function CreateTextBox(
     }
 
     let borderGraphics = new PIXI.Graphics().lineStyle(1, 0x000000, 1);
-    borderGraphics = drawRough(
+    borderGraphics = drawRoughV1(
         borderGraphics,
         roughGenerator.rectangle(0, 0, borderWidth, borderHeight),
     );
@@ -178,5 +188,23 @@ export function AddClick(
             pressUp();
         });
 
+    return obj;
+}
+
+export function autoScale(
+    obj: PIXI.Container,
+    window: { width: number; height: number },
+): PIXI.Container {
+    const rateWindow = {
+        width: obj.width / window.width,
+        height: obj.height / window.height,
+    };
+
+    const ratio =
+        rateWindow.width < rateWindow.height
+            ? rateWindow.width
+            : rateWindow.height;
+
+    obj.scale.set(ratio, ratio);
     return obj;
 }
