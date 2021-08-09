@@ -213,8 +213,8 @@ export class BasicGameScene extends Scene {
 
     private initCanvas(): void {
         const maxWindow = {
-            width: this.game.designWidth,
-            height: this.game.designHeight,
+            width: this.game.designWidth + 200,
+            height: this.game.designHeight + 200,
         };
 
         const rateWindow = {
