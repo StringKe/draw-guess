@@ -64,4 +64,12 @@ export default class SceneManager {
         }
         return false;
     }
+
+    get<T>(game: string): T | undefined {
+        const instance = this.scenes.get(game);
+        if (instance) {
+            return instance as unknown as T;
+        }
+        return undefined;
+    }
 }

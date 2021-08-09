@@ -71,7 +71,7 @@ export class Backend {
         return await new Promise<MGOBE.types.RoomInfo>((resolve) => {
             const matchRoomPara = {
                 playerInfo: this.playerInfo,
-                maxPlayers: 8,
+                maxPlayers: 2,
                 roomType: '1',
             };
             this.room.matchRoom(matchRoomPara, (matchRoomEvent) => {
@@ -99,6 +99,7 @@ export class Backend {
             MGOBE.Listener.init(this.gameInfo, config, (event) => {
                 if (event.code === 0) {
                     resolve(true);
+                    MGOBE.Listener.add(this.room);
                 } else {
                     resolve(false);
                 }

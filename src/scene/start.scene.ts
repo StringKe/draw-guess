@@ -1,8 +1,11 @@
+import moment from 'moment';
+
 import * as PIXI from 'pixi.js';
 
 import Scene from '../scene';
 import { SettingIcon } from '../utils/icons';
 import { AddClick, CreateTextBox, SetPosition } from '../utils/ui';
+import { BasicGameScene } from './game/basic.game.scene';
 
 /**
  * 欢迎场景
@@ -26,6 +29,29 @@ export class StartScene extends Scene {
                     this.game.screen,
                 );
                 this.container.addChild(infoTitle);
+
+                const play = (): void => {
+                    window.clearInterval(loopInfo);
+                    console.log('可以开始游戏了');
+                    this.game.sceneManager.active('basic.game');
+                    const game =
+                        this.game.sceneManager.get<BasicGameScene>(
+                            'basic.game',
+                        );
+                    if (game) {
+                        game.start();
+                    }
+                };
+
+                if (info.playerList.length === info.maxPlayers) {
+                    console.log(
+                        info.startGameTime,
+                        info.createTime,
+                        moment(info.startGameTime).diff(moment()),
+                    );
+                    play();
+                    // this.game.backend.room.dismissRoom({},)
+                }
             };
             showInfos(info);
             const loopInfo = setInterval(() => {
@@ -38,11 +64,7 @@ export class StartScene extends Scene {
 
             this.game.backend.room.onJoinRoom = (event) => {
                 const info = event.data.roomInfo;
-                if (info.playerList.length === info.maxPlayers) {
-                    window.clearInterval(loopInfo);
-                    alert('可以开始游戏了');
-                }
-                showInfos(event.data.roomInfo);
+                showInfos(info);
             };
         });
     }
@@ -56,7 +78,7 @@ export class StartScene extends Scene {
         );
         AddClick(startGameButton, (e) => {
             console.log('点击开始游戏');
-            this.game.sceneManager.active('basic.game');
+            this.startMathGame();
         });
         const gameLobby = AddClick(
             SetPosition(CreateTextBox('游戏大厅'), 0.5, 0.5, this.game.screen),

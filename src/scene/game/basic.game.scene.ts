@@ -1,12 +1,18 @@
 import * as gsc from '@thi.ng/geom-subdiv-curve';
+import { cloneDeep } from 'lodash';
+import { StringBatcher } from 'stringbatcher';
 
 import * as PIXI from 'pixi.js';
 
 import { Game } from '../../game';
 import Scene from '../../scene';
 import { CloseIcon } from '../../utils/icons';
+import { Round } from '../../utils/math';
+import { bathMessage } from '../../utils/socket';
 import { drawRoughV1, roughGenerator } from '../../utils/styles';
 import { AddClick, autoScale, SetPosition } from '../../utils/ui';
+
+import ErrCode = MGOBE.ErrCode;
 
 interface StrokePath {
     x: number;
@@ -17,6 +23,7 @@ interface StrokeSave {
     color: number;
     width: number;
     points: StrokePath[];
+    isSend: boolean;
 }
 
 /**
@@ -25,9 +32,15 @@ interface StrokeSave {
 export class BasicGameScene extends Scene {
     name = 'basic.game';
     // 当前绘制的路径
-    strokePath: StrokeSave[] = [];
-    // 笔画数量下标
-    strokePathIndex: number = 0;
+    strokePath: StrokeSave = {
+        color: 0,
+        points: [],
+        width: 1,
+        isSend: false,
+    };
+
+    strokeSavePath: StrokeSave[] = [];
+
     strokeOptions: {
         color: number;
         width: number;
@@ -50,10 +63,24 @@ export class BasicGameScene extends Scene {
     private ratio: number = 1;
     private canvas!: PIXI.Graphics;
     private overflowHidden!: PIXI.Graphics;
+    private nowLine!: PIXI.Graphics;
+    private readonly sender: StringBatcher;
 
     constructor(public game: Game) {
         super(game);
         this.initCanvas();
+        this.sender = bathMessage(420)((chunk) => {
+            const frame = {
+                chunk: 1,
+            };
+            this.game.backend.room.sendFrame({ data: frame }, (event) => {
+                if (event.code === ErrCode.EC_OK) {
+                    console.log('发送成功', event);
+                } else {
+                    console.log('发送失败', event);
+                }
+            });
+        });
     }
 
     load(): void {
@@ -66,6 +93,76 @@ export class BasicGameScene extends Scene {
             },
         );
         this.container.addChild(close);
+    }
+
+    sendPath(): void {
+        // const frame = { paths: [1, 2, 3] };
+        const data = JSON.stringify(
+            this.strokeSavePath.reduce<StrokeSave[]>((result, i, index) => {
+                if (!i.isSend) {
+                    this.strokeSavePath[index].isSend = true;
+                    result.push(i);
+                }
+                return result;
+            }, []),
+        );
+        console.log(data);
+        this.sender.process(data);
+    }
+
+    start(): void {
+        this.game.backend.room.startFrameSync({}, (event) => {
+            if (event.code === ErrCode.EC_OK) {
+                console.log('开始游戏 成功');
+            } else {
+                console.log('开始游戏 失败');
+            }
+        });
+        this.game.backend.room.onStartFrameSync = (event) => {
+            console.log('开始帧同步');
+        };
+        this.game.backend.room.onRecvFrame = ({
+            data: {
+                frame: { id, items },
+            },
+        }) => {
+            if (items.length) {
+                console.log('帧广播', id, items);
+            }
+        };
+    }
+
+    renderStrokePath(line: StrokeSave): PIXI.Graphics {
+        const points = line.points.map((i) => {
+            return [i.x * this.ratio, i.y * this.ratio];
+        });
+
+        const renderPoints = gsc.subdivide(points, {
+            fn: gsc.kernel3([1 / 8, 3 / 4, 1 / 8], [0, 1 / 2, 1 / 2]),
+            size: 3,
+        }) as number[][];
+
+        const lineGraphics = new PIXI.Graphics();
+
+        if (renderPoints.length) {
+            const fistPoint = renderPoints[0];
+            lineGraphics.lineStyle(line.width, line.color);
+            lineGraphics.moveTo(fistPoint[0], fistPoint[1]);
+            renderPoints.shift();
+            renderPoints.forEach(([x, y]) => {
+                lineGraphics.lineTo(x, y);
+            });
+        } else if (points.length) {
+            const lineGraphics = new PIXI.Graphics();
+            lineGraphics.lineStyle(0);
+            lineGraphics.beginFill(line.color, 1);
+            // lineGraphics.drawCircle(10, 10, 30);
+            points.forEach(([x, y]) => {
+                lineGraphics.drawCircle(x, y, line.width);
+            });
+            lineGraphics.endFill();
+        }
+        return lineGraphics;
     }
 
     private onDragStart(event: PIXI.InteractionEvent): void {
@@ -84,20 +181,20 @@ export class BasicGameScene extends Scene {
         const mouse = (this.dragData as PIXI.InteractionData).getLocalPosition(
             this.canvas,
         );
-        const [x, y] = [mouse.x, mouse.y].map((i) => i / this.ratio);
+        const [x, y] = [mouse.x, mouse.y].map((i) => Round(i / this.ratio, 0));
 
-        if (!this.strokePath[this.strokePathIndex]) {
-            this.strokePath[this.strokePathIndex] = {
-                color: this.strokeOptions.color,
-                points: [],
-                width: this.strokeOptions.width,
-            };
-        }
-        this.strokePath[this.strokePathIndex].points.push({
+        this.strokePath.color = this.strokeOptions.color;
+        this.strokePath.width = this.strokeOptions.width;
+
+        this.strokePath.points.push({
             x,
             y,
         });
-        this.renderStrokePath();
+        if (this.nowLine) {
+            this.canvas.removeChild(this.nowLine);
+        }
+        this.nowLine = this.renderStrokePath(this.strokePath);
+        this.canvas.addChild(this.nowLine);
     }
 
     private onDragEnd(event: PIXI.InteractionEvent): void {
@@ -107,7 +204,10 @@ export class BasicGameScene extends Scene {
         this.dragging = false;
         this.dragData = undefined;
         this.isMove = false;
-        this.strokePathIndex++;
+        this.strokeSavePath.push(cloneDeep(this.strokePath));
+        this.strokePath.points = [];
+        this.renderStrokeSavePath();
+        this.sendPath();
     }
 
     private renderClear(): void {
@@ -297,42 +397,13 @@ export class BasicGameScene extends Scene {
             });
     }
 
-    private renderStrokePath(): void {
+    private renderStrokeSavePath(): void {
         // 清理之前渲染的所有结果
         this.renderClear();
 
         // 线过长线段非常明显
-        this.strokePath.forEach((line, index) => {
-            const points = line.points.map((i) => {
-                return [i.x * this.ratio, i.y * this.ratio];
-            });
-
-            const renderPoints = gsc.subdivide(points, {
-                fn: gsc.kernel3([1 / 8, 3 / 4, 1 / 8], [0, 1 / 2, 1 / 2]),
-                size: 3,
-            }) as number[][];
-
-            if (renderPoints.length) {
-                const fistPoint = renderPoints[0];
-                const lineGraphics = new PIXI.Graphics();
-                lineGraphics.lineStyle(line.width, line.color);
-                lineGraphics.moveTo(fistPoint[0], fistPoint[1]);
-                renderPoints.shift();
-                renderPoints.forEach(([x, y]) => {
-                    lineGraphics.lineTo(x, y);
-                });
-                this.strokePathCanvas.addChild(lineGraphics);
-            } else if (points.length) {
-                const lineGraphics = new PIXI.Graphics();
-                lineGraphics.lineStyle(0);
-                lineGraphics.beginFill(line.color, 1);
-                // lineGraphics.drawCircle(10, 10, 30);
-                points.forEach(([x, y]) => {
-                    lineGraphics.drawCircle(x, y, line.width);
-                });
-                lineGraphics.endFill();
-                this.strokePathCanvas.addChild(lineGraphics);
-            }
+        this.strokeSavePath.forEach((line, index) => {
+            this.strokePathCanvas.addChild(this.renderStrokePath(line));
         });
     }
 }

@@ -17,9 +17,11 @@
     "@thi.ng/geom-subdiv-curve": "^1.0.1",
     "d-path-parser": "^1.0.0",
     "lodash": "^4.17.21",
+    "moment": "^2.29.1",
     "nanoid": "^3.1.23",
     "pixi.js": "^6.1.0",
-    "roughjs": "^4.4.1"
+    "roughjs": "^4.4.1",
+    "stringbatcher": "^1.0.6"
   },
   "devDependencies": {
     "@commitlint/cli": "^13.1.0",
